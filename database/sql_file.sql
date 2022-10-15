@@ -1,9 +1,10 @@
 create extension if not exists "uuid-ossp";
 
 
-CREATE TABLE IF NOT EXISTS "user" (
+CREATE TABLE IF NOT EXISTS "bank_user" (
     "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
     "username" VARCHAR(75) NOT NULL UNIQUE,
+    "full_name" VARCHAR(255) NOT NULL,
     "document_number" VARCHAR(11) NOT NULL,
     "password" TEXT NOT NULL,
     "email" VARCHAR(125) NOT NULL UNIQUE,
