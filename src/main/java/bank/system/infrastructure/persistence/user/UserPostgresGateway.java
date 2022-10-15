@@ -57,15 +57,13 @@ public final class UserPostgresGateway implements UserGateway<UUID> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Status<?> authenticate(String authType, String search, String unHashPassword) {
+    public Status<User> authenticate(String authType, String search, String unHashPassword) {
         Status<?> userAuthStatus = userRepository.findUserAuthPassword(authType, search);
         if (userAuthStatus.getStatus().equals(SUCCESS.name())) {
             UserAuth<UUID> userAuth = userAuthStatus.parseAndGetBody(UserAuth.class);
             boolean validPassword = Hash.validatePassword(userAuth.password(), unHashPassword);
             if (!validPassword) {
-                userAuthStatus.setStatus(ERROR.name());
-                userAuthStatus.setMessage("Authentication failed, wrong password");
-                return userAuthStatus;
+                return new Status<>(ERROR.name(), "Authentication failed, wrong password");
             }
 
             Status<User> userStatus = userRepository.findByID(userAuth.id());
@@ -75,6 +73,6 @@ public final class UserPostgresGateway implements UserGateway<UUID> {
 
             return userStatus;
         }
-        return userAuthStatus;
+        return new Status<>(ERROR.name(), userAuthStatus.getMessage());
     }
 }

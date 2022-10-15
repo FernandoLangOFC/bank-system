@@ -11,5 +11,5 @@ public interface UserGateway<T> {
     void delete(T id);
     User update(User user);
 
-    Status<?> authenticate(String authType, String search, String unHashPassword);
+    Status<User> authenticate(String authType, String search, String unHashPassword);
 }
