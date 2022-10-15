@@ -5,7 +5,7 @@ import bank.system.domain.user.UserGateway;
 
 import java.util.UUID;
 
-public class DefaultCreateUserHandler extends CreateUserHandler {
+public class DefaultCreateUserHandler implements CreateUserHandler {
 
     private static final String SUCCESSFULLY_CREATED = "User created successfully!";
 
