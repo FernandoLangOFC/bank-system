@@ -55,11 +55,11 @@ public class Status<E> {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T parseAndGetBody(Class<T> _class) {
-        if (_class.isAssignableFrom(body.getClass())) {
+    public <T> T parseAndGetBody(Class<T> clazz) {
+        if (clazz.isAssignableFrom(body.getClass())) {
             return (T) body;
         }
-        throw new OperationException(format("Can't parse %s to %s ", body.getClass().getSimpleName(), _class.getSimpleName()));
+        throw new OperationException(format("Can't parse %s to %s ", body.getClass().getSimpleName(), clazz.getSimpleName()));
     }
 
     @Override
