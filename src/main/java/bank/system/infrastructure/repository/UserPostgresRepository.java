@@ -3,6 +3,7 @@ package bank.system.infrastructure.repository;
 import bank.system.domain.Identifier;
 import bank.system.domain.common.Status;
 import bank.system.domain.user.User;
+import bank.system.domain.user.UserAuth;
 import bank.system.domain.user.UserIdentifier;
 import bank.system.infrastructure.persistence.query.Query;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class UserPostgresRepository implements UserRepository {
     public Status<?> createUser(User user) {
         final var createUserSql = Query.CREATE_USER_QUERY;
 
-        try (final var preparedStatement = connection.prepareStatement(createUserSql)) {
+        try (final var preparedStatement = connection.prepareStatement(createUserSql.getQuery())) {
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.setString(2, user.getPassword());
             preparedStatement.setString(3, user.getEmail());
@@ -50,9 +51,9 @@ public class UserPostgresRepository implements UserRepository {
 
     @Override
     public Status<?> updateUser(User user) {
-        final var createUserSql = Query.UPDATE_USER_QUERY;
+        final var updateUserSql = Query.UPDATE_USER_QUERY;
 
-        try (final var preparedStatement = connection.prepareStatement(createUserSql)) {
+        try (final var preparedStatement = connection.prepareStatement(updateUserSql.getQuery())) {
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.setString(2, user.getEmail());
             preparedStatement.setString(3, user.getPhone());
@@ -68,14 +69,14 @@ public class UserPostgresRepository implements UserRepository {
 
     @Override
     public Status<?> retrieveUser(Identifier<UUID> identifier) {
-        final var createUserSql = Query.RETRIEVE_USER_BY_ID_QUERY;
+        final var retrieveUserSql = Query.RETRIEVE_USER_BY_ID_QUERY;
 
-        try (final var preparedStatement = connection.prepareStatement(createUserSql)) {
+        try (final var preparedStatement = connection.prepareStatement(retrieveUserSql.getQuery())) {
             preparedStatement.setObject(1, identifier.getValue());
 
             ResultSet resultSet = preparedStatement.executeQuery();
             User user = null;
-            while(resultSet.next()) {
+            while (resultSet.next()) {
                 UUID id = resultSet.getObject("id", UUID.class);
                 user = User.create(UserIdentifier.from(id), resultSet.getString("username"), null);
                 user.setEmail(resultSet.getString("email"));
@@ -97,5 +98,30 @@ public class UserPostgresRepository implements UserRepository {
     @Override
     public Status<?> deleteUser(Identifier<UUID> identifier) {
         return null;
+    }
+
+    @Override
+    public Status<?> findUserAuthPassword(String authType, String search) {
+        Query query = Query.getByFilter(authType);
+
+        try (final var preparedStatement = connection.prepareStatement(query.getQuery())) {
+            preparedStatement.setObject(1, search);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            UserAuth userAuth = null;
+
+            while (resultSet.next()) {
+                UUID id = resultSet.getObject("id", UUID.class);
+                userAuth = new UserAuth(UserIdentifier.from(id), resultSet.getString("password"));
+            }
+
+            if (isNull(userAuth))
+                return new Status<>(ERROR.name(), "User not found");
+
+            return new Status<>(SUCCESS.name(), userAuth);
+
+        } catch (SQLException e) {
+            return new Status<>(ERROR.name(), format("Error on retrieve user: %s", e.getMessage()));
+        }
     }
 }

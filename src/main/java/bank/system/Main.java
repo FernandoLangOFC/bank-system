@@ -2,6 +2,7 @@ package bank.system;
 
 import bank.system.domain.common.Status;
 import bank.system.domain.user.User;
+import bank.system.domain.user.UserAuth;
 import bank.system.domain.user.UserIdentifier;
 import bank.system.infrastructure.persistence.PostgresConnection;
 import bank.system.infrastructure.repository.UserPostgresRepository;
@@ -22,9 +23,9 @@ public class Main extends Application {
   @Override
   public void start(Stage stage) throws Exception {
       userPostgresRepository = new UserPostgresRepository(PostgresConnection.getConnection());
-      Status<?> status = userPostgresRepository.retrieveUser(UserIdentifier.from("4faf24ae-8ab9-4096-a02d-ca2ae9ab0a4d"));
+      Status<?> status = userPostgresRepository.findUserAuthPassword("DOCUMENT" ,"123456");
 
-      System.out.println(status.parseAndGetBody(User.class).toString());
+      System.out.println(status.parseAndGetBody(UserAuth.class).toString());
 
 
       Label l = new Label("Hello, JavaFX .");

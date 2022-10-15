@@ -13,4 +13,6 @@ public interface UserRepository {
     Status<?> retrieveUser(final Identifier<UUID> identifier);
     Status<?> deleteUser(final Identifier<UUID> identifier);
 
+    Status<?> findUserAuthPassword(final String authType, final String search);
+
 }
