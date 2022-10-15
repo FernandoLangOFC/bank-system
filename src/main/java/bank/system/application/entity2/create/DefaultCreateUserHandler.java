@@ -3,13 +3,15 @@ package bank.system.application.entity2.create;
 import bank.system.domain.user.User;
 import bank.system.domain.user.UserGateway;
 
+import java.util.UUID;
+
 public class DefaultCreateUserHandler extends CreateUserHandler {
 
     private static final String SUCCESSFULLY_CREATED = "User created successfully!";
 
-    private final UserGateway userGateway;
+    private final UserGateway<UUID> userGateway;
 
-    public DefaultCreateUserHandler(final UserGateway userGateway) {
+    public DefaultCreateUserHandler(final UserGateway<UUID> userGateway) {
         this.userGateway = userGateway;
     }
 

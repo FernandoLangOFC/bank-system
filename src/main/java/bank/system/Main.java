@@ -22,16 +22,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        userPostgresRepository = new UserPostgresRepository(PostgresConnection.getConnection());
-        userPostgresGateway = new UserPostgresGateway(userPostgresRepository);
-        User user = User.create("ferna1nd1o222", "45115127222");
-        user.setDocumentNumber("9952911");
-        user.setEmail("secure3@emai1l.com");
-        user.setFullName("fernando33 pika das galaxiyyyiiiaaas");
-        user.setPhone("99991996");
-        User user1 = userPostgresGateway.create(user);
-        System.out.println(user1.toString());
-
         Label l = new Label("Hello, JavaFX .");
         Scene scene = new Scene(new StackPane(l), 640, 480);
         stage.setScene(scene);

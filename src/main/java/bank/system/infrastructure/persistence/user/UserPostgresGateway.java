@@ -27,7 +27,7 @@ public final class UserPostgresGateway implements UserGateway<UUID> {
         user.setPassword(Hash.hashPassword(user.getPassword()));
         final var createdUserStatus = userRepository.create(user);
 
-        if (createdUserStatus.getStatus().equals(ERROR.name()))
+        if (createdUserStatus.getSituation().equals(ERROR.name()))
             throw new OperationException(createdUserStatus.toString());
         
         return createdUserStatus.getBody();
@@ -36,7 +36,7 @@ public final class UserPostgresGateway implements UserGateway<UUID> {
     @Override
     public Optional<User> findById(final UUID id) {
         Status<User> userStatus = userRepository.findByID(id);
-        if (userStatus.getStatus().equals(SUCCESS.name())) {
+        if (userStatus.getSituation().equals(SUCCESS.name())) {
             return Optional.of(userStatus.getBody());
         }
         return Optional.empty();
@@ -46,7 +46,7 @@ public final class UserPostgresGateway implements UserGateway<UUID> {
     @Override
     public void delete(final UUID id) {
         Status<?> deleteStatus = userRepository.delete(id);
-        if (deleteStatus.getStatus().equals(ERROR.name()))
+        if (deleteStatus.getSituation().equals(ERROR.name()))
             throw new OperationException(deleteStatus.toString());
     }
 
@@ -59,7 +59,7 @@ public final class UserPostgresGateway implements UserGateway<UUID> {
     @SuppressWarnings("unchecked")
     public Status<User> authenticate(String authType, String search, String unHashPassword) {
         Status<?> userAuthStatus = userRepository.findUserAuthPassword(authType, search);
-        if (userAuthStatus.getStatus().equals(SUCCESS.name())) {
+        if (userAuthStatus.getSituation().equals(SUCCESS.name())) {
             UserAuth<UUID> userAuth = userAuthStatus.parseAndGetBody(UserAuth.class);
             boolean validPassword = Hash.validatePassword(userAuth.password(), unHashPassword);
             if (!validPassword) {
@@ -67,7 +67,7 @@ public final class UserPostgresGateway implements UserGateway<UUID> {
             }
 
             Status<User> userStatus = userRepository.findByID(userAuth.id());
-            if (userStatus.getStatus().equals(ERROR.name())) {
+            if (userStatus.getSituation().equals(ERROR.name())) {
                 throw new OperationException(userStatus.toString());
             }
 

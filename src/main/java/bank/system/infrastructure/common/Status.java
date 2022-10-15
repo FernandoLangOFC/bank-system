@@ -1,5 +1,6 @@
 package bank.system.infrastructure.common;
 
+import bank.system.infrastructure.exception.OperationException;
 import bank.system.utils.Formater;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,40 +13,40 @@ import static java.util.Objects.nonNull;
 @Data
 @AllArgsConstructor
 public class Status<E> {
-    private String status;
+    private String situation;
     private LocalDateTime dateTime;
     private String message;
     private E body;
 
-    public Status(final String staus, final E body) {
+    public Status(final String situation, final E body) {
         this.dateTime = LocalDateTime.now();
-        this.status = staus;
+        this.situation = situation;
         this.body = body;
     }
 
     public Status(final String staus, final String message) {
         this.dateTime = LocalDateTime.now();
         this.message = message;
-        this.status = staus;
+        this.situation = staus;
     }
 
     public Status(final String staus, final String message, final E body) {
         this.dateTime = LocalDateTime.now();
         this.message = message;
-        this.status = staus;
+        this.situation = staus;
         this.body = body;
     }
 
     public Status(final String staus) {
         this.dateTime = LocalDateTime.now();
-        this.status = staus;
+        this.situation = staus;
         this.body = null;
     }
 
     public void resign(Status<E> newStatus) {
         this.message = newStatus.getMessage();
         this.dateTime = LocalDateTime.now();
-        this.status = newStatus.getStatus();
+        this.situation = newStatus.getSituation();
         this.body = newStatus.getBody();
     }
 
@@ -58,7 +59,7 @@ public class Status<E> {
         if (_class.isAssignableFrom(body.getClass())) {
             return (T) body;
         }
-        throw new RuntimeException(format("Can't parse %s to %s ", body.getClass().getSimpleName(), _class.getSimpleName()));
+        throw new OperationException(format("Can't parse %s to %s ", body.getClass().getSimpleName(), _class.getSimpleName()));
     }
 
     @Override
@@ -67,7 +68,7 @@ public class Status<E> {
                 """
                     [%s] [%s] : [ %s ]
                 """,
-                status, dateTime.format(Formater.DATE_TIME_FORMATTER), nonNull(body) ? body.toString() : message
+                situation, dateTime.format(Formater.DATE_TIME_FORMATTER), nonNull(body) ? body.toString() : message
         );
     }
 

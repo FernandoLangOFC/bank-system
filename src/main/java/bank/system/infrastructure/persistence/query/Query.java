@@ -1,5 +1,6 @@
 package bank.system.infrastructure.persistence.query;
 
+import bank.system.infrastructure.exception.OperationException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -42,7 +43,7 @@ public enum Query {
     """);
 
     private final String filter;
-    private final String query;
+    private final String sql;
 
     public static Query getByFilter(String filter) {
         for(Query _query : Query.values()) {
@@ -50,7 +51,7 @@ public enum Query {
                 return _query;
         }
 
-        throw new RuntimeException("Filter not found");
+        throw new OperationException("Filter not found");
     }
 
 }

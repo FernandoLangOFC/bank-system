@@ -28,7 +28,7 @@ public class UserPostgresRepository implements UserRepository {
     public Status<User> create(User entity) {
         final var createUserSql = Query.CREATE_USER_QUERY;
 
-        try (final var preparedStatement = connection.prepareStatement(createUserSql.getQuery(), Statement.RETURN_GENERATED_KEYS)) {
+        try (final var preparedStatement = connection.prepareStatement(createUserSql.getSql(), Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setString(1, entity.getUsername());
             preparedStatement.setString(2, entity.getPassword());
@@ -62,7 +62,7 @@ public class UserPostgresRepository implements UserRepository {
     public Status<User> update(User entity) {
         final var updateUserSql = Query.UPDATE_USER_QUERY;
 
-        try (final var preparedStatement = connection.prepareStatement(updateUserSql.getQuery())) {
+        try (final var preparedStatement = connection.prepareStatement(updateUserSql.getSql())) {
             preparedStatement.setString(1, entity.getUsername());
             preparedStatement.setString(2, entity.getEmail());
             preparedStatement.setString(3, entity.getPhone());
@@ -80,7 +80,7 @@ public class UserPostgresRepository implements UserRepository {
     public Status<User> findByID(UUID id) {
         final var retrieveUserSql = Query.RETRIEVE_USER_BY_ID_QUERY;
 
-        try (final var preparedStatement = connection.prepareStatement(retrieveUserSql.getQuery())) {
+        try (final var preparedStatement = connection.prepareStatement(retrieveUserSql.getSql())) {
             preparedStatement.setObject(1, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -108,7 +108,7 @@ public class UserPostgresRepository implements UserRepository {
     public Status<User> delete(UUID id) {
         final var updateUserSql = Query.DELETE_USER_QUERY;
 
-        try (final var preparedStatement = connection.prepareStatement(updateUserSql.getQuery())) {
+        try (final var preparedStatement = connection.prepareStatement(updateUserSql.getSql())) {
             preparedStatement.setObject(1, id);
             int affectedRows = preparedStatement.executeUpdate();
 
@@ -127,7 +127,7 @@ public class UserPostgresRepository implements UserRepository {
     public Status<UserAuth<UUID>> findUserAuthPassword(String authType, String search) {
         Query query = Query.getByFilter(authType);
 
-        try (final var preparedStatement = connection.prepareStatement(query.getQuery())) {
+        try (final var preparedStatement = connection.prepareStatement(query.getSql())) {
             preparedStatement.setObject(1, search);
 
             ResultSet resultSet = preparedStatement.executeQuery();
