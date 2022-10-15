@@ -51,7 +51,7 @@ public class UserPostgresRepository implements UserRepository {
                 entity.setUpdatedAt(resultSet.getTimestamp("updated_at").toLocalDateTime());
             }
 
-            return new Status<>(SUCCESS.name(), entity);
+            return new Status<>(SUCCESS.name(), "Created user successfully", entity);
 
         } catch (SQLException e) {
             return new Status<>(ERROR.name(), format("Error on insert entity: %s", e.getMessage()));

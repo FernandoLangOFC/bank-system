@@ -23,14 +23,14 @@ public final class UserPostgresGateway implements UserGateway<UUID> {
     }
 
     @Override
-    public User create(final User user) throws OperationException {
+    public Status<User> create(final User user) throws OperationException {
         user.setPassword(Hash.hashPassword(user.getPassword()));
         final var createdUserStatus = userRepository.create(user);
 
         if (createdUserStatus.getSituation().equals(ERROR.name()))
             throw new OperationException(createdUserStatus.toString());
         
-        return createdUserStatus.getBody();
+        return createdUserStatus;
     }
 
     @Override
