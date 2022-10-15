@@ -31,7 +31,15 @@ public enum Query {
 
     RETRIEVE_USER_BY_EMAIL_QUERY("RETRIEVE_EMAIL", """
             SELECT id, password FROM "bank_user" WHERE "email" = ? LIMIT 1;
-            """);
+            """),
+
+    CHECK_AUTH_WITH_ID_QUERY("CHECK_AUTH", """
+        SELECT id, password FROM "bank_user" WHERE "id" = ? LIMIT 1;
+    """),
+
+    DELETE_USER_QUERY("DELETE", """
+        DELETE FROM "bank_user" WHERE "id" = ?;
+    """);
 
     private final String filter;
     private final String query;

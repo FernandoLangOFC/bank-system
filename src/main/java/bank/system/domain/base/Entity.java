@@ -1,7 +1,6 @@
 package bank.system.domain.base;
 
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 

@@ -2,7 +2,6 @@ package bank.system.infrastructure.repository;
 
 import bank.system.domain.user.User;
 import bank.system.domain.user.UserAuth;
-import bank.system.domain.user.UserIdentifier;
 import bank.system.infrastructure.common.Status;
 import bank.system.infrastructure.persistence.query.Query;
 import lombok.RequiredArgsConstructor;
@@ -74,7 +73,7 @@ public class UserPostgresRepository implements UserRepository {
             return new Status<>(ERROR.name(), format("Error on update user: %s", e.getMessage()));
         }
 
-        return new Status<>(SUCCESS.name(), format("User %s updated successfully", entity.getUsername()));
+        return new Status<>(SUCCESS.name(), format("User %s updated successfully", entity.getUsername()), entity);
     }
 
     @Override
@@ -107,11 +106,25 @@ public class UserPostgresRepository implements UserRepository {
 
     @Override
     public Status<User> delete(UUID id) {
-        return null;
+        final var updateUserSql = Query.DELETE_USER_QUERY;
+
+        try (final var preparedStatement = connection.prepareStatement(updateUserSql.getQuery())) {
+            preparedStatement.setObject(1, id);
+            int affectedRows = preparedStatement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating entity failed, no rows affected.");
+            }
+
+        } catch (SQLException e) {
+            return new Status<>(ERROR.name(), format("Error on delete user: %s", e.getMessage()));
+        }
+
+        return new Status<>(SUCCESS.name(), format("User with ID %s deleted successfully", id.toString()));
     }
 
     @Override
-    public Status<?> findUserAuthPassword(String authType, String search) {
+    public Status<UserAuth<UUID>> findUserAuthPassword(String authType, String search) {
         Query query = Query.getByFilter(authType);
 
         try (final var preparedStatement = connection.prepareStatement(query.getQuery())) {

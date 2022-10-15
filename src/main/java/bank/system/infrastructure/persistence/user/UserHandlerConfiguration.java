@@ -4,11 +4,13 @@ import bank.system.application.entity2.create.CreateUserHandler;
 import bank.system.application.entity2.create.DefaultCreateUserHandler;
 import bank.system.domain.user.UserGateway;
 
+import java.util.UUID;
+
 public class UserHandlerConfiguration {
 
-    private final UserGateway userGateway;
+    private final UserGateway<UUID> userGateway;
 
-    public UserHandlerConfiguration(final UserGateway userGateway) {
+    public UserHandlerConfiguration(final UserGateway<UUID> userGateway) {
         this.userGateway = userGateway;
     } 
 

@@ -42,6 +42,17 @@ public class Status<E> {
         this.body = null;
     }
 
+    public void resign(Status<E> newStatus) {
+        this.message = newStatus.getMessage();
+        this.dateTime = LocalDateTime.now();
+        this.status = newStatus.getStatus();
+        this.body = newStatus.getBody();
+    }
+
+    public void clearBody() {
+        this.body = null;
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T parseAndGetBody(Class<T> _class) {
         if (_class.isAssignableFrom(body.getClass())) {

@@ -1,5 +1,6 @@
 package bank.system.domain.user;
 
+import bank.system.infrastructure.common.Status;
 import bank.system.infrastructure.exception.OperationException;
 
 import java.util.Optional;
@@ -9,4 +10,6 @@ public interface UserGateway<T> {
     Optional<User> findById(T id);
     void delete(T id);
     User update(User user);
+
+    Status<?> authenticate(String authType, String search, String unHashPassword);
 }
