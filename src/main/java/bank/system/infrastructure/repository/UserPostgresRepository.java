@@ -3,15 +3,20 @@ package bank.system.infrastructure.repository;
 import bank.system.domain.Identifier;
 import bank.system.domain.common.Status;
 import bank.system.domain.user.User;
+import bank.system.domain.user.UserIdentifier;
 import bank.system.infrastructure.persistence.query.Query;
 import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLType;
+import java.util.UUID;
 
 import static java.lang.String.format;
 import static bank.system.domain.common.Status.Type.ERROR;
 import static bank.system.domain.common.Status.Type.SUCCESS;
+import static java.util.Objects.isNull;
 
 
 @RequiredArgsConstructor
@@ -55,20 +60,42 @@ public class UserPostgresRepository implements UserRepository {
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
-            return new Status<>(ERROR.name(), format("Error on insert user: %s", e.getMessage()));
+            return new Status<>(ERROR.name(), format("Error on update user: %s", e.getMessage()));
         }
 
         return new Status<>(SUCCESS.name(), format("User %s updated successfully", user.getUsername()));
     }
 
     @Override
-    public Status<?> retrieveUser(Identifier<?> identifier) {
-        
-        return null;
+    public Status<?> retrieveUser(Identifier<UUID> identifier) {
+        final var createUserSql = Query.RETRIEVE_USER_BY_ID_QUERY;
+
+        try (final var preparedStatement = connection.prepareStatement(createUserSql)) {
+            preparedStatement.setObject(1, identifier.getValue());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            User user = null;
+            while(resultSet.next()) {
+                UUID id = resultSet.getObject("id", UUID.class);
+                user = User.create(UserIdentifier.from(id), resultSet.getString("username"), null);
+                user.setEmail(resultSet.getString("email"));
+                user.setPhone(resultSet.getString("phone"));
+                user.setFullName(resultSet.getString("full_name"));
+                user.setDocumentNumber(resultSet.getString("document_number"));
+            }
+
+            if (isNull(user))
+                return new Status<>(ERROR.name(), "User not found");
+
+            return new Status<>(SUCCESS.name(), user);
+
+        } catch (SQLException e) {
+            return new Status<>(ERROR.name(), format("Error on retrieve user: %s", e.getMessage()));
+        }
     }
 
     @Override
-    public Status<?> deleteUser(Identifier<?> identifier) {
+    public Status<?> deleteUser(Identifier<UUID> identifier) {
         return null;
     }
 }

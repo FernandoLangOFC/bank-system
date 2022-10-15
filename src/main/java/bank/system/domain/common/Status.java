@@ -5,6 +5,8 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+import static java.lang.String.format;
+
 @Data
 @AllArgsConstructor
 public class Status<E> {
@@ -22,6 +24,14 @@ public class Status<E> {
         this.dateTime = LocalDateTime.now();
         this.status = staus;
         this.body = null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T parseAndGetBody(Class<T> _class) {
+        if (_class.isAssignableFrom(body.getClass())) {
+            return (T) body;
+        }
+        throw new RuntimeException(format("Can't parse %s to %s ", body.getClass().getSimpleName(), _class.getSimpleName()));
     }
 
 
