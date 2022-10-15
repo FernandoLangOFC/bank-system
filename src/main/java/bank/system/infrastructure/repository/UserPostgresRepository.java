@@ -1,10 +1,9 @@
 package bank.system.infrastructure.repository;
 
-import bank.system.domain.Identifier;
-import bank.system.domain.common.Status;
 import bank.system.domain.user.User;
 import bank.system.domain.user.UserAuth;
 import bank.system.domain.user.UserIdentifier;
+import bank.system.infrastructure.common.Status;
 import bank.system.infrastructure.persistence.query.Query;
 import lombok.RequiredArgsConstructor;
 
@@ -12,9 +11,9 @@ import java.sql.*;
 import java.util.UUID;
 
 import static java.lang.String.format;
-import static bank.system.domain.common.Status.Type.ERROR;
-import static bank.system.domain.common.Status.Type.SUCCESS;
 import static java.util.Objects.isNull;
+
+import static bank.system.infrastructure.common.Status.Type.*;
 
 
 @RequiredArgsConstructor
@@ -27,63 +26,69 @@ public class UserPostgresRepository implements UserRepository {
     }
 
     @Override
-    public Status<?> createUser(User user) {
+    public Status<User> create(User entity) {
         final var createUserSql = Query.CREATE_USER_QUERY;
 
-        try (final var preparedStatement = connection.prepareStatement(createUserSql.getQuery())) {
+        try (final var preparedStatement = connection.prepareStatement(createUserSql.getQuery(), Statement.RETURN_GENERATED_KEYS)) {
 
-            preparedStatement.setString(1, user.getUsername());
-            preparedStatement.setString(2, user.getPassword());
-            preparedStatement.setString(3, user.getEmail());
-            preparedStatement.setString(4, user.getDocumentNumber());
-            preparedStatement.setString(5, user.getPhone());
-            preparedStatement.setString(6, user.getFullName());
+            preparedStatement.setString(1, entity.getUsername());
+            preparedStatement.setString(2, entity.getPassword());
+            preparedStatement.setString(3, entity.getEmail());
+            preparedStatement.setString(4, entity.getDocumentNumber());
+            preparedStatement.setString(5, entity.getPhone());
+            preparedStatement.setString(6, entity.getFullName());
 
             int affectedRows = preparedStatement.executeUpdate();
-            System.out.println(affectedRows);
-            
-            if (affectedRows == 0) {
-                throw new SQLException("Creating user failed, no rows affected.");
-            }
-            System.out.println(affectedRows);
 
-            return new Status<>(SUCCESS.name(), user);
+            if (affectedRows == 0) {
+                throw new SQLException("Creating entity failed, no rows affected.");
+            }
+
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+
+            if(resultSet.next()){
+                entity.setId(resultSet.getObject("id", UUID.class));
+                entity.setCreatedAt(resultSet.getTimestamp("created_at").toLocalDateTime());
+                entity.setUpdatedAt(resultSet.getTimestamp("updated_at").toLocalDateTime());
+            }
+
+            return new Status<>(SUCCESS.name(), entity);
 
         } catch (SQLException e) {
-            return new Status<>(ERROR.name(), format("Error on insert user: %s", e.getMessage()));
+            return new Status<>(ERROR.name(), format("Error on insert entity: %s", e.getMessage()));
         }
     }
 
     @Override
-    public Status<?> updateUser(User user) {
+    public Status<User> update(User entity) {
         final var updateUserSql = Query.UPDATE_USER_QUERY;
 
         try (final var preparedStatement = connection.prepareStatement(updateUserSql.getQuery())) {
-            preparedStatement.setString(1, user.getUsername());
-            preparedStatement.setString(2, user.getEmail());
-            preparedStatement.setString(3, user.getPhone());
-            preparedStatement.setString(4, user.getFullName());
+            preparedStatement.setString(1, entity.getUsername());
+            preparedStatement.setString(2, entity.getEmail());
+            preparedStatement.setString(3, entity.getPhone());
+            preparedStatement.setString(4, entity.getFullName());
 
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             return new Status<>(ERROR.name(), format("Error on update user: %s", e.getMessage()));
         }
 
-        return new Status<>(SUCCESS.name(), format("User %s updated successfully", user.getUsername()));
+        return new Status<>(SUCCESS.name(), format("User %s updated successfully", entity.getUsername()));
     }
 
     @Override
-    public Status<?> retrieveUser(Identifier<UUID> identifier) {
+    public Status<User> findByID(UUID id) {
         final var retrieveUserSql = Query.RETRIEVE_USER_BY_ID_QUERY;
 
         try (final var preparedStatement = connection.prepareStatement(retrieveUserSql.getQuery())) {
-            preparedStatement.setObject(1, identifier.getValue());
+            preparedStatement.setObject(1, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             User user = null;
             while (resultSet.next()) {
-                UUID id = resultSet.getObject("id", UUID.class);
-                user = User.create(UserIdentifier.from(id), resultSet.getString("username"), null);
+                user = User.create(resultSet.getString("username"));
+                user.setId(id);
                 user.setEmail(resultSet.getString("email"));
                 user.setPhone(resultSet.getString("phone"));
                 user.setFullName(resultSet.getString("full_name"));
@@ -91,7 +96,7 @@ public class UserPostgresRepository implements UserRepository {
             }
 
             if (isNull(user))
-                return new Status<>(ERROR.name(), "User not found");
+                return new Status<>(Status.Type.ERROR.name(), "User not found");
 
             return new Status<>(SUCCESS.name(), user);
 
@@ -101,7 +106,7 @@ public class UserPostgresRepository implements UserRepository {
     }
 
     @Override
-    public Status<?> deleteUser(Identifier<UUID> identifier) {
+    public Status<User> delete(UUID id) {
         return null;
     }
 
@@ -113,11 +118,11 @@ public class UserPostgresRepository implements UserRepository {
             preparedStatement.setObject(1, search);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            UserAuth userAuth = null;
+            UserAuth<UUID> userAuth = null;
 
             while (resultSet.next()) {
                 UUID id = resultSet.getObject("id", UUID.class);
-                userAuth = new UserAuth(UserIdentifier.from(id), resultSet.getString("password"));
+                userAuth = new UserAuth<>(id, resultSet.getString("password"));
             }
 
             if (isNull(userAuth))

@@ -1,16 +1,17 @@
 package bank.system.infrastructure.persistence.user;
 
-import bank.system.domain.common.Status;
 import bank.system.domain.user.User;
 import bank.system.domain.user.UserGateway;
-import bank.system.domain.user.UserIdentifier;
 import bank.system.infrastructure.exception.OperationException;
 import bank.system.infrastructure.repository.UserRepository;
 import bank.system.utils.Hash;
 
-import java.util.Optional;
+import static bank.system.infrastructure.common.Status.Type.ERROR;
 
-public class UserPostgresGateway implements UserGateway {
+import java.util.Optional;
+import java.util.UUID;
+
+public final class UserPostgresGateway implements UserGateway<UUID> {
 
     private final UserRepository userRepository;
 
@@ -21,22 +22,22 @@ public class UserPostgresGateway implements UserGateway {
     @Override
     public User create(final User user) throws OperationException {
         user.setPassword(Hash.hashPassword(user.getPassword()));
-        final var createdUserStatus = userRepository.createUser(user);
+        final var createdUserStatus = userRepository.create(user);
 
-        if (createdUserStatus.getStatus().equals(Status.Type.ERROR.name()))
+        if (createdUserStatus.getStatus().equals(ERROR.name()))
             throw new OperationException(createdUserStatus.toString());
-
-        return createdUserStatus.parseAndGetBody(User.class);
+        
+        return (User) createdUserStatus.getBody();
     }
 
     @Override
-    public Optional<User> findById(final UserIdentifier id) {
+    public Optional<User> findById(final UUID id) {
         return Optional.empty();
     }
 
 
     @Override
-    public void delete(final UserIdentifier id) {
+    public void delete(final UUID id) {
 
     }
 

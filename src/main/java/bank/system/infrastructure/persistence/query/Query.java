@@ -9,7 +9,7 @@ import lombok.Getter;
 public enum Query {
     CREATE_USER_QUERY("CREATE", """
             INSERT INTO "bank_user"("username", "password", "email", "document_number", "phone", "full_name")
-            VALUES(?, ?, ?, ?, ?, ?)
+            VALUES(?, ?, ?, ?, ?, ?) RETURNING id, created_at, updated_at
             """),
 
     UPDATE_USER_QUERY("UPDATE", """

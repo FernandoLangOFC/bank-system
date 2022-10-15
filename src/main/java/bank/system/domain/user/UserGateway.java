@@ -4,9 +4,9 @@ import bank.system.infrastructure.exception.OperationException;
 
 import java.util.Optional;
 
-public interface UserGateway {
+public interface UserGateway<T> {
     User create(User user) throws OperationException;
-    Optional<User> findById(UserIdentifier id);
-    void delete(UserIdentifier id);
+    Optional<User> findById(T id);
+    void delete(T id);
     User update(User user);
 }

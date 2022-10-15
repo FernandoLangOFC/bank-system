@@ -1,6 +1,6 @@
 package bank.system.domain.user;
 
-import bank.system.domain.Identifier;
+import bank.system.domain.base.Identifier;
 
 import java.util.UUID;
 

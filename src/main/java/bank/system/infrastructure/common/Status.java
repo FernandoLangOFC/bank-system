@@ -1,4 +1,4 @@
-package bank.system.domain.common;
+package bank.system.infrastructure.common;
 
 import bank.system.utils.Formater;
 import lombok.AllArgsConstructor;
@@ -7,16 +7,31 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 import static java.lang.String.format;
+import static java.util.Objects.nonNull;
 
 @Data
 @AllArgsConstructor
 public class Status<E> {
     private String status;
     private LocalDateTime dateTime;
+    private String message;
     private E body;
 
     public Status(final String staus, final E body) {
         this.dateTime = LocalDateTime.now();
+        this.status = staus;
+        this.body = body;
+    }
+
+    public Status(final String staus, final String message) {
+        this.dateTime = LocalDateTime.now();
+        this.message = message;
+        this.status = staus;
+    }
+
+    public Status(final String staus, final String message, final E body) {
+        this.dateTime = LocalDateTime.now();
+        this.message = message;
         this.status = staus;
         this.body = body;
     }
@@ -41,7 +56,7 @@ public class Status<E> {
                 """
                     [%s] [%s] : [ %s ]
                 """,
-                status, dateTime.format(Formater.DATE_TIME_FORMATTER), body.toString()
+                status, dateTime.format(Formater.DATE_TIME_FORMATTER), nonNull(body) ? body.toString() : message
         );
     }
 

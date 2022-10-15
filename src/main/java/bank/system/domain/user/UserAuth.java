@@ -1,4 +1,4 @@
 package bank.system.domain.user;
 
-public record UserAuth (UserIdentifier id, String password) {
+public record UserAuth<T> (T id, String password) {
 }
