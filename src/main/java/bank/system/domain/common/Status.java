@@ -1,5 +1,6 @@
 package bank.system.domain.common;
 
+import bank.system.utils.Formater;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -34,6 +35,15 @@ public class Status<E> {
         throw new RuntimeException(format("Can't parse %s to %s ", body.getClass().getSimpleName(), _class.getSimpleName()));
     }
 
+    @Override
+    public String toString() {
+        return format(
+                """
+                    [%s] [%s] : [ %s ]
+                """,
+                status, dateTime.format(Formater.DATE_TIME_FORMATTER), body.toString()
+        );
+    }
 
     public enum Type {
         SUCCESS,

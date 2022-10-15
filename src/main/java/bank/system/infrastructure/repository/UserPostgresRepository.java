@@ -8,10 +8,7 @@ import bank.system.domain.user.UserIdentifier;
 import bank.system.infrastructure.persistence.query.Query;
 import lombok.RequiredArgsConstructor;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLType;
+import java.sql.*;
 import java.util.UUID;
 
 import static java.lang.String.format;
@@ -34,6 +31,7 @@ public class UserPostgresRepository implements UserRepository {
         final var createUserSql = Query.CREATE_USER_QUERY;
 
         try (final var preparedStatement = connection.prepareStatement(createUserSql.getQuery())) {
+
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.setString(2, user.getPassword());
             preparedStatement.setString(3, user.getEmail());
@@ -41,12 +39,19 @@ public class UserPostgresRepository implements UserRepository {
             preparedStatement.setString(5, user.getPhone());
             preparedStatement.setString(6, user.getFullName());
 
-            preparedStatement.executeUpdate();
+            int affectedRows = preparedStatement.executeUpdate();
+            System.out.println(affectedRows);
+            
+            if (affectedRows == 0) {
+                throw new SQLException("Creating user failed, no rows affected.");
+            }
+            System.out.println(affectedRows);
+
+            return new Status<>(SUCCESS.name(), user);
+
         } catch (SQLException e) {
             return new Status<>(ERROR.name(), format("Error on insert user: %s", e.getMessage()));
         }
-
-        return new Status<>(SUCCESS.name(), format("User %s created successfully", user.getUsername()));
     }
 
     @Override

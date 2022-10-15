@@ -15,6 +15,7 @@
     {
       "type": "maven",
       "name": "run javafx",
+      "debugJvm":"true",
       "environment": {
         "PATH_TO_FX": "$PROJECT_DIR$/javafx-sdk-19/lib",
         "DATABASE_URL": "jdbc:postgresql://localhost:5432/falkon-master?user=falkon-master&password=falkon-master&ssl=false"

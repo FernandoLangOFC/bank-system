@@ -8,8 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Query {
     CREATE_USER_QUERY("CREATE", """
-            INSERT INTO `bank_user`('username', 'password', 'email', 'document_number', 'phone', 'full_name')
-            VALUES(?, ?, ?, ?, ?, ?);
+            INSERT INTO "bank_user"("username", "password", "email", "document_number", "phone", "full_name")
+            VALUES(?, ?, ?, ?, ?, ?)
             """),
 
     UPDATE_USER_QUERY("UPDATE", """

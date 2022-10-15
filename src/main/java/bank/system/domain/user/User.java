@@ -1,6 +1,7 @@
 package bank.system.domain.user;
 
 import bank.system.domain.Entity;
+import bank.system.domain.Identifier;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,13 +28,25 @@ public class User extends Entity<UserIdentifier> {
 
     }
 
+    // WITHOUT ID BECAUSE HIM IS AUTO-GENERATED
+    private User( final String username, final String password) {
+        super();
+        this.username = username;
+        this.password = password;
+    }
+
+    public void setId(UserIdentifier userIdentifier) {
+        this.id = userIdentifier;
+    }
+
     public static User create(final UserIdentifier id,
                             final String username,
                             final String password) {
         return new User(id, username, password);
     }
 
+    // WITHOUT ID BECAUSE HIM IS AUTO-GENERATED
     public static User create(final String username, final String password) {
-        return new User(UserIdentifier.random(), username, password);
+        return new User(username, password);
     }
 }
