@@ -1,0 +1,3 @@
+bank\system\infrastructure\persistence\query\Query.class
+bank\system\infrastructure\persistence\PostgresConnection.class
+bank\system\Main.class

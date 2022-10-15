@@ -1,0 +1,11 @@
+BANCO:
+    -> Cadastrar/Editar/Deletar o Usuário
+
+    -> Permitir cadastrar/deletar +1 conta bancária
+    -> Permitir visualizar os dados do banco de forma simultânea (saldo etc...)
+    -> Permitir transação entre os bancos
+    -> Permitir visualizar extrato
+    -> PIX
+    -> Permitir criar cartão de crédito virtual
+    -> Leitura de linha digitável e pagamento de boletos
+    -> Disparo de email (ao receber/pagar)

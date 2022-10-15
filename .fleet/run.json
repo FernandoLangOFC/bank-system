@@ -1,0 +1,33 @@
+{
+  "configurations": [
+    {
+      "type": "maven",
+      "name": "compile javafx",
+      "environment": {
+        "PATH_TO_FX": "$PROJECT_DIR$/javafx-sdk-19/lib"
+      },
+      "tasks": [
+        "clean",
+        "install",
+        "compile"
+      ]
+    },
+    {
+      "type": "maven",
+      "name": "run javafx",
+      "environment": {
+        "PATH_TO_FX": "$PROJECT_DIR$/javafx-sdk-19/lib",
+        "DATABASE_URL": "jdbc:postgresql://localhost:5432/falkon-master?user=falkon-master&password=falkon-master&ssl=false"
+      },
+      "tasks": [
+        "javafx:run"
+      ]
+    },
+    {
+      "type": "command",
+      "name": "run sql file",
+      "program": "C:/Windows/System32/WindowsPowerShell/v1.0/powershell.exe",
+      "args": [ "$PROJECT_DIR$/database/exec-sql.bat"],
+    }
+  ]
+}
