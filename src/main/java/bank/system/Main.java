@@ -1,8 +1,10 @@
 package bank.system;
 
+import bank.system.fx.FXConfiguration;
+import bank.system.fx.loader.View;
+import bank.system.fx.loader.ViewLoader;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
@@ -14,9 +16,12 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Label l = new Label("Hello, JavaFX .");
-        Scene scene = new Scene(new StackPane(l), 640, 480);
+        FXConfiguration.loadConfiguration(stage);
+
+        Scene scene = new Scene(new StackPane(ViewLoader.getParent(View.LOGIN_PAGE)));
         stage.setScene(scene);
         stage.show();
+
+        FXConfiguration.afterShow(stage);
     }
 }

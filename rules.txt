@@ -9,3 +9,9 @@ BANCO:
     -> Permitir criar cartão de crédito virtual
     -> Leitura de linha digitável e pagamento de boletos
     -> Disparo de email (ao receber/pagar)
+
+
+Janela:
+    -> Tamanho:
+        -> Width = (Total width) - 40%
+        -> Height = (Total height) - 20% 
