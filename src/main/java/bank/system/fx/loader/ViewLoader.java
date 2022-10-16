@@ -21,14 +21,16 @@ public class ViewLoader {
         views = new EnumMap<>(View.class);
 
         LOGGER.info("Initializing views... ");
-        Arrays.stream(View.values()).forEach(e -> {
-            try {
-                views.put(e, new FXMLLoader(e.getUrl()).load());
-                LOGGER.info("Loaded: {} - {} ", e.name(), e.getUrl().getFile());
-            } catch (IOException ex) {
-                LOGGER.error(ex.getMessage());
-            }
-        });
+        Arrays.stream(View.values()).forEach(ViewLoader::loadView);
+    }
+
+    public static void loadView(View view) {
+        try {
+            views.put(view, new FXMLLoader(view.getUrl()).load());
+            LOGGER.info("Loaded: {} - {} ", view.name(), view.getUrl().getFile());
+        } catch (IOException ex) {
+            LOGGER.error(ex.getMessage());
+        }
     }
 
     public static Parent getParent(View view) {
