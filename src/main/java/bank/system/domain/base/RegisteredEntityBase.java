@@ -13,7 +13,7 @@ public abstract class RegisteredEntityBase<T> extends EntityBase<T> {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public RegisteredEntityBase(T id) {
+    protected RegisteredEntityBase(T id) {
         super(id);
     }
 }
