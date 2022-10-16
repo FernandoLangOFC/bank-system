@@ -6,6 +6,7 @@ import lombok.*;
 import java.util.UUID;
 
 @Data
+@NoArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class User extends RegisteredEntityBase<UUID> {
@@ -17,21 +18,16 @@ public class User extends RegisteredEntityBase<UUID> {
     private String email;
     private String phone;
 
-    // WITHOUT ID BECAUSE HIM IS AUTO-GENERATED
-    private User(UserBasicAuth userBasicAuth) {
-        this.username = userBasicAuth.username();
-        this.password = userBasicAuth.password();
+    private User(UUID uuid) {
+        super(uuid);
     }
 
-    public static User create(final String username) {
-        return User.create(username, null);
+    // WITHOUT ID BECAUSE HIM IS AUTO-GENERATED
+    public static User create() {
+        return new User();
     }
     
-    // WITHOUT ID BECAUSE HIM IS AUTO-GENERATED
-    public static User create(final String username, final String password) {
-        return new User(UserBasicAuth.from(username, password));
+    public static User createWithRandomUUID() {
+        return new User(UUID.randomUUID());
     }
-
-
-
 }

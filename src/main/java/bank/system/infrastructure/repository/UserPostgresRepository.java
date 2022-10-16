@@ -1,7 +1,7 @@
 package bank.system.infrastructure.repository;
 
 import bank.system.domain.user.User;
-import bank.system.domain.user.UserAuth;
+import bank.system.domain.user.UserAuthRequest;
 import bank.system.infrastructure.common.Status;
 import bank.system.infrastructure.persistence.query.Query;
 import lombok.RequiredArgsConstructor;
@@ -86,10 +86,12 @@ public class UserPostgresRepository implements UserRepository {
             ResultSet resultSet = preparedStatement.executeQuery();
             User user = null;
             while (resultSet.next()) {
-                user = User.create(resultSet.getString("username"));
+                user = User.create();
+
                 user.setId(id);
                 user.setEmail(resultSet.getString("email"));
                 user.setPhone(resultSet.getString("phone"));
+                user.setUsername(resultSet.getString("username"));
                 user.setFullName(resultSet.getString("full_name"));
                 user.setDocumentNumber(resultSet.getString("document_number"));
             }
@@ -124,24 +126,20 @@ public class UserPostgresRepository implements UserRepository {
     }
 
     @Override
-    public Status<UserAuth<UUID>> findUserAuthPassword(String authType, String search) {
-        Query query = Query.getByFilter(authType);
+    public Status<UserAuthRequest<UUID>> findUserAuthPassword(UserAuthRequest<UUID> userAuthRequest) {
+        Query query = Query.getByFilter(userAuthRequest.getAuthType());
 
         try (final var preparedStatement = connection.prepareStatement(query.getSql())) {
-            preparedStatement.setObject(1, search);
+            preparedStatement.setObject(1, userAuthRequest.getLogin());
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            UserAuth<UUID> userAuth = null;
 
             while (resultSet.next()) {
                 UUID id = resultSet.getObject("id", UUID.class);
-                userAuth = new UserAuth<>(id, resultSet.getString("password"));
+                userAuthRequest.setId(id);
             }
 
-            if (isNull(userAuth))
-                return new Status<>(ERROR.name(), "User not found");
-
-            return new Status<>(SUCCESS.name(), userAuth);
+            return new Status<>(SUCCESS.name(), userAuthRequest);
 
         } catch (SQLException e) {
             return new Status<>(ERROR.name(), format("Error on retrieve user: %s", e.getMessage()));

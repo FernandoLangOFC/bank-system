@@ -16,10 +16,22 @@ public class DefaultCreateUserHandler implements CreateUserHandler {
 
     @Override
     public String execute(final CreateUserCommand createUserCommand) {
-        final var aName = createUserCommand.username();
-        final var aPassword = createUserCommand.password();
+        final var anUser = User.create();
 
-        final var anUser = User.create(aName, aPassword);
+        final var aName = createUserCommand.username();
+        final var aEmail = createUserCommand.email();
+        final var aDocumentNumber = createUserCommand.documentNumber();
+        final var aPassword = createUserCommand.password();
+        final var aFullName = createUserCommand.fullName();
+        final var aPhone = createUserCommand.phone();
+
+        anUser.setUsername(aDocumentNumber);
+        anUser.setDocumentNumber(aName);
+        anUser.setFullName(aFullName);
+        anUser.setPassword(aPassword);
+        anUser.setEmail(aEmail);
+        anUser.setPhone(aPhone);
+
         Status<User> userStatus = userGateway.create(anUser);
         return userStatus.getMessage();
     }

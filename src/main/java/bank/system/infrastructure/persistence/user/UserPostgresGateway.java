@@ -1,7 +1,7 @@
 package bank.system.infrastructure.persistence.user;
 
 import bank.system.domain.user.User;
-import bank.system.domain.user.UserAuth;
+import bank.system.domain.user.UserAuthRequest;
 import bank.system.domain.user.UserGateway;
 import bank.system.infrastructure.common.Status;
 import bank.system.infrastructure.exception.OperationException;
@@ -56,23 +56,23 @@ public final class UserPostgresGateway implements UserGateway<UUID> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Status<User> authenticate(String authType, String search, String unHashPassword) {
-        Status<?> userAuthStatus = userRepository.findUserAuthPassword(authType, search);
+    public Status<User> authenticate(UserAuthRequest<UUID> userAuthRequest) {
+        Status<UserAuthRequest<UUID>> userAuthStatus = userRepository.findUserAuthPassword(userAuthRequest);
         if (userAuthStatus.getSituation().equals(SUCCESS.name())) {
-            UserAuth<UUID> userAuth = userAuthStatus.parseAndGetBody(UserAuth.class);
-            boolean validPassword = Hash.validatePassword(userAuth.password(), unHashPassword);
+            boolean validPassword = Hash.validatePassword(userAuthRequest.getHashedPassword(), userAuthRequest.getUnHashedPassword());
+
             if (!validPassword) {
                 return new Status<>(ERROR.name(), "Authentication failed, wrong password");
             }
 
-            Status<User> userStatus = userRepository.findByID(userAuth.id());
+            Status<User> userStatus = userRepository.findByID(userAuthRequest.getId());
             if (userStatus.getSituation().equals(ERROR.name())) {
                 throw new OperationException(userStatus.toString());
             }
 
             return userStatus;
         }
+
         return new Status<>(ERROR.name(), userAuthStatus.getMessage());
     }
 }
