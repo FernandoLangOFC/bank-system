@@ -1,4 +1,4 @@
-package bank.system.application.entity2;
+package bank.system.application.user;
 
 public interface AbstractHandler<I, O> {
     O execute(I in);

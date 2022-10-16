@@ -16,6 +16,8 @@ import java.util.UUID;
 
 public final class UserPostgresGateway implements UserGateway<UUID> {
 
+    private static final String FAILED_MESSAGE = "Authentication failed, wrong password";
+
     private final UserRepository userRepository;
 
     public UserPostgresGateway(final UserRepository anUserRepository) {
@@ -35,17 +37,20 @@ public final class UserPostgresGateway implements UserGateway<UUID> {
 
     @Override
     public Optional<User> findById(final UUID id) {
-        Status<User> userStatus = userRepository.findByID(id);
+        final var userStatus = userRepository.findByID(id);
+
         if (userStatus.getSituation().equals(SUCCESS.name())) {
             return Optional.of(userStatus.getBody());
         }
+
         return Optional.empty();
     }
 
 
     @Override
     public void delete(final UUID id) {
-        Status<?> deleteStatus = userRepository.delete(id);
+        final var deleteStatus = userRepository.delete(id);
+
         if (deleteStatus.getSituation().equals(ERROR.name()))
             throw new OperationException(deleteStatus.toString());
     }
@@ -56,23 +61,30 @@ public final class UserPostgresGateway implements UserGateway<UUID> {
     }
 
     @Override
-    public Status<User> authenticate(UserAuthRequest<UUID> userAuthRequest) {
+    public Status<User> authenticate(final UserAuthRequest<UUID> userAuthRequest) {
         Status<UserAuthRequest<UUID>> userAuthStatus = userRepository.findUserAuthPassword(userAuthRequest);
+
         if (userAuthStatus.getSituation().equals(SUCCESS.name())) {
-            boolean validPassword = Hash.validatePassword(userAuthRequest.getHashedPassword(), userAuthRequest.getUnHashedPassword());
-
-            if (!validPassword) {
-                return new Status<>(ERROR.name(), "Authentication failed, wrong password");
-            }
-
-            Status<User> userStatus = userRepository.findByID(userAuthRequest.getId());
-            if (userStatus.getSituation().equals(ERROR.name())) {
-                throw new OperationException(userStatus.toString());
-            }
-
-            return userStatus;
+            return validateCurrentSituation(userAuthRequest);
         }
 
         return new Status<>(ERROR.name(), userAuthStatus.getMessage());
+    }
+
+    private Status<User> validateCurrentSituation(final UserAuthRequest<UUID> userAuthRequest) {
+        final var validPassword = Hash
+                .validatePassword(userAuthRequest.getHashedPassword(), userAuthRequest.getUnHashedPassword());
+
+        if (!validPassword) {
+            return new Status<>(ERROR.name(), FAILED_MESSAGE);
+        }
+
+        final var userStatus = userRepository.findByID(userAuthRequest.getId());
+
+        if (userStatus.getSituation().equals(ERROR.name())) {
+            throw new OperationException(userStatus.toString());
+        }
+
+        return userStatus;
     }
 }

@@ -1,7 +1,10 @@
 package bank.system.domain.user;
 
 import bank.system.domain.base.RegisteredEntityBase;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.UUID;
 

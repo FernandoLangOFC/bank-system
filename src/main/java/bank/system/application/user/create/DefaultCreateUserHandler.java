@@ -1,4 +1,4 @@
-package bank.system.application.entity2.create;
+package bank.system.application.user.create;
 
 import bank.system.domain.user.User;
 import bank.system.domain.user.UserGateway;

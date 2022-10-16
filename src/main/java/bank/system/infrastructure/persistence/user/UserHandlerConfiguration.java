@@ -1,7 +1,7 @@
 package bank.system.infrastructure.persistence.user;
 
-import bank.system.application.entity2.create.CreateUserHandler;
-import bank.system.application.entity2.create.DefaultCreateUserHandler;
+import bank.system.application.user.create.CreateUserHandler;
+import bank.system.application.user.create.DefaultCreateUserHandler;
 import bank.system.domain.user.UserGateway;
 
 import java.util.UUID;
