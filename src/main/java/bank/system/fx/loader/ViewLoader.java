@@ -9,21 +9,21 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ViewLoader {
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewLoader.class);
-    private static Map<View, Parent> VIEWS_LOADER;
+    private static Map<View, Parent> VIEWS;
 
     public static void loadViews() {
-        VIEWS_LOADER = new HashMap<>();
+        VIEWS = new EnumMap<>(View.class);
 
         LOGGER.info("Initializing views... ");
         Arrays.stream(View.values()).forEach(e -> {
             try {
-                VIEWS_LOADER.put(e, new FXMLLoader(e.getUrl()).load());
+                VIEWS.put(e, new FXMLLoader(e.getUrl()).load());
                 LOGGER.info("Loaded: {} - {} ", e.name(), e.getUrl().getFile());
             } catch (IOException ex) {
                 LOGGER.error(ex.getMessage());
@@ -32,6 +32,6 @@ public class ViewLoader {
     }
 
     public static Parent getParent(View view) {
-        return VIEWS_LOADER.get(view);
+        return VIEWS.get(view);
     }
 }
