@@ -23,6 +23,21 @@ public class User extends RegisteredEntityBase<UUID> {
     // it was before.
     // Don't feed Cats with Bird's seeds, it's not sustainable
 
+    /*
+        - The main purpose of 'Identity VOs' it is not to depend on Logical Relationships.
+        Instead of it, create a 'Physical Relationship between the entities'.
+
+        - If there are classes that has 'User' by composition and the only relationship it's an attribute with
+        a 'primitive' value, this will be a logical relationship and this is a bad pattern.
+
+        - By the way, like you said, it's rare the identifier type change,
+        but decouple it's only one benefit of an Identity VO.
+
+        https://medium.com/@gara.mohamed/domain-driven-design-the-identifier-type-pattern-d86fd3c128b3
+
+        */
+
+    private UserIdentifier userID;
     private String username;
     private String password;
     private String documentNumber;
@@ -30,16 +45,16 @@ public class User extends RegisteredEntityBase<UUID> {
     private String email;
     private String phone;
 
-    private User(UUID uuid) {
+    private User(final UUID uuid) {
         super(uuid);
     }
 
-    // WITHOUT ID BECAUSE HIM IS AUTO-GENERATED
-    public static User create() {
-        return new User();
+    private User(final UserIdentifier anId) {
+        super(anId.getValue());
+        this.userID = anId;
     }
-    
-    public static User createWithRandomUUID() {
-        return new User(UUID.randomUUID());
+
+    public static User create() {
+        return new User(UserIdentifier.random());
     }
 }

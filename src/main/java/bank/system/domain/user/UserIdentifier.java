@@ -10,14 +10,6 @@ public class UserIdentifier extends Identifier<UUID> {
         super(aValue);
     }
 
-    public static UserIdentifier from(UUID identifier) {
-        return new UserIdentifier(identifier);
-    }
-
-    public static UserIdentifier from(String identifier) {
-        return new UserIdentifier(UUID.fromString(identifier));
-    }
-
     public static UserIdentifier random() {
         return new UserIdentifier(UUID.randomUUID());
     }
