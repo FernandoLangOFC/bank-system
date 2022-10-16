@@ -27,7 +27,9 @@ public class ViewLoader {
     public static void loadView(View view) {
         try {
             views.put(view, new FXMLLoader(view.getUrl()).load());
-            LOGGER.info("Loaded: {} - {} ", view.name(), view.getUrl().getFile());
+            final var viewName = view.name();
+            final var url = view.getUrl().getFile();
+            LOGGER.info("Loaded: {} - {} ", viewName, url);
         } catch (IOException ex) {
             LOGGER.error(ex.getMessage());
         }
